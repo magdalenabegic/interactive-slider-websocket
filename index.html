@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>WebSocket Slider</title>
+    <style>
+      body {
+        margin: 50px;
+      }
+      #sliderContainer {
+        text-align: center;
+      }
+      #sliderMono,
+      #sliderRGB {
+        width: 50%;
+      }
+      .maxInput {
+        height: 24px;
+        width: 10%;
+        border: 1px solid grey;
+        border-radius: 6px;
+        font-size: 24px;
+      }
+      #smallBoxesContainer {
+        text-align: left;
+        margin-left: 50px;
+      }
+      #LED {
+        border: 1px solid gray;
+        border-radius: 8px;
+        width: 25%;
+        margin-top: 50px;
+        margin-left: 50px;
+      }
+      h3 {
+        text-align: center;
+      }
+      .vertical {
+        writing-mode: vertical-lr;
+        height: 50%;
+      }
+      .sliderRGBLED {
+        display: flex;
+        justify-content: space-between;
+        padding: 20px;
+      }
+      #LEDSliders {
+        display: flex;
+        justify-content: space-between;
+      }
+      .black{
+        border: 1.5px solid black;
+        border-radius: 6px;
+      }
+      .red{
+        border: 1.5px solid red;
+        border-radius: 6px;
+      }
+      .green{
+        border: 1.5px solid green;
+        border-radius: 6px;
+      }
+      .blue{
+        border: 1.5px solid blue;
+        border-radius: 6px;
+      }
+    </style>
+  </head>
+  <body>
+    <input 
+      id="receiveLux"
+      placeholder="received Lux"
+      type="text"
+      class="received-payload-input"
+    />
+    <input 
+      id="receiveBmono"
+      placeholder="received Bmono"
+      type="text"
+      class="received-payload-input"
+    />
+    <div id="sliderContainer">
+      <h3>Pmono</h3>
+      <div data-sync-ws-data="pmono">
+        <input 
+          type="number" 
+          min="0"
+          max="100"
+          value="0"
+          class="black"
+        >
+        <span>0</span>
+
+        <input
+          type="range"
+          min="0"
+          max="100"
+          value="0"
+          class="sliderMono"
+          id="sliderMono"
+        />
+        <span>100</span>
+      </div>
+      <div data-sync-ws-data="prgb">
+        <h3>PRGB</h3>
+        <input 
+          type="number" 
+          min="0"
+          max="255"
+          value="0"
+          class="black"
+        >
+        <span>0</span>
+        <input
+          type="range"
+          min="0"
+          max="255"
+          value="0"
+          class="sliderMono"
+          id="sliderMono"
+        />
+        <span>255</span>
+      </div>
+    </div>
+    <div id="smallBoxesContainer">
+      <input
+        id="maxInput"
+        type="number"
+        class="maxInput"
+        oninput="checkInput(this)"
+        placeholder="Max input: 4"
+      />
+    </div>
+    <div id="LEDSliders">
+      <div id="LED">
+        <h3>RGB LED 0</h3>
+        <div class="sliderRGBLED">
+          <div style="display: flex; flex-direction: column;">
+            <span>0</span>
+            <span style="margin-top: auto;">255</span>
+          </div>
+          <div data-sync-ws-data="l0p" style="display: flex; flex-direction: column;">
+            <input 
+              type="number" 
+              min="0"
+              max="255"
+              value="0"
+              class="black"
+            >
+            <input
+              type="range"
+              min="0"
+              max="255"
+              value="0"
+              class="vertical"
+              orientation="vertical"
+            />
+          </div>
+          <div data-sync-ws-data="l0r" style="display: flex; flex-direction: column;">
+            <input 
+              type="number" 
+              min="0"
+              max="255"
+              value="0"
+              class="red"
+
+            >
+            <input
+              type="range"
+              min="0"
+              max="255"
+              value="0"
+              id="sliderRGB1"
+              class="vertical"
+              orientation="vertical"
+            />
+          </div>
+          <div data-sync-ws-data="l0g" style="display: flex; flex-direction: column;">
+            <input 
+              type="number" 
+              min="0"
+              max="255"
+              value="0"
+              class="green"
+            >
+            <input
+              type="range"
+              min="0"
+              max="255"
+              value="0"
+              id="sliderRGB2"
+              class="vertical"
+              orientation="vertical"
+            />
+          </div>
+          <div data-sync-ws-data="l0b" style="display: flex; flex-direction: column;">
+            <input 
+              type="number" 
+              min="0"
+              max="255"
+              value="0"
+              class="blue"
+            >
+            <input
+              type="range"
+              min="0"
+              max="255"
+              value="0"
+              id="sliderRGB3"
+              class="vertical"
+              orientation="vertical"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div id="LED">
+        <h3>RGB LED 1</h3>
+        <div class="sliderRGBLED">
+          <div style="display: flex; flex-direction: column;">
+            <span>0</span>
+            <span style="margin-top: auto;">255</span>
+          </div>
+          <div data-sync-ws-data="l1p" style="display: flex; flex-direction: column;">
+            <input 
+              type="number" 
+              min="0"
+              max="255"
+              value="0"
+              class="black"
+            >
+            <input
+              type="range"
+              min="0"
+              max="255"
+              value="0"
+              class="vertical"
+              orientation="vertical"
+            />
+          </div>
+          <div data-sync-ws-data="l1r" style="display: flex; flex-direction: column;">
+            <input 
+              type="number" 
+              min="0"
+              max="255"
+              value="0"
+              class="red"
+            >
+            <input
+              type="range"
+              min="0"
+              max="255"
+              value="0"
+              id="sliderRGB1"
+              class="vertical"
+              orientation="vertical"
+            />
+          </div>
+          <div data-sync-ws-data="l1g" style="display: flex; flex-direction: column;">
+            <input 
+              type="number" 
+              min="0"
+              max="255"
+              value="0"
+              class="green"
+            >
+            <input
+              type="range"
+              min="0"
+              max="255"
+              value="0"
+              id="sliderRGB2"
+              class="vertical"
+              orientation="vertical"
+            />
+          </div>
+          <div data-sync-ws-data="l1b" style="display: flex; flex-direction: column;">
+            <input 
+              type="number" 
+              min="0"
+              max="255"
+              value="0"
+              class="blue"
+            >
+            <input
+              type="range"
+              min="0"
+              max="255"
+              value="0"
+              id="sliderRGB3"
+              class="vertical"
+              orientation="vertical"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div id="LED">
+        <h3>RGB LED 2</h3>
+        <div class="sliderRGBLED">
+          <div style="display: flex; flex-direction: column;">
+            <span>0</span>
+            <span style="margin-top: auto;">255</span>
+          </div>
+          <div data-sync-ws-data="l2p" style="display: flex; flex-direction: column;">
+            <input 
+              type="number" 
+              min="0"
+              max="255"
+              value="0"
+              class="black"
+            >
+            <input
+              type="range"
+              min="0"
+              max="255"
+              value="0"
+              class="vertical"
+              orientation="vertical"
+            />
+          </div>
+          <div data-sync-ws-data="l2r" style="display: flex; flex-direction: column;">
+            <input 
+              type="number" 
+              min="0"
+              max="255"
+              value="0"
+              class="red"
+            >
+            <input
+              type="range"
+              min="0"
+              max="255"
+              value="0"
+              id="sliderRGB1"
+              class="vertical"
+              orientation="vertical"
+            />
+          </div>
+          <div data-sync-ws-data="l2g" style="display: flex; flex-direction: column;">
+            <input 
+              type="number" 
+              min="0"
+              max="255"
+              value="0"
+              class="green"
+            >
+            <input
+              type="range"
+              min="0"
+              max="255"
+              value="0"
+              id="sliderRGB2"
+              class="vertical"
+              orientation="vertical"
+            />
+          </div>
+          <div data-sync-ws-data="l2b" style="display: flex; flex-direction: column;">
+            <input 
+              type="number" 
+              min="0"
+              max="255"
+              value="0"
+              class="blue"
+            >
+            <input
+              type="range"
+              min="0"
+              max="255"
+              value="0"
+              id="sliderRGB3"
+              class="vertical"
+              orientation="vertical"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div id="LED">
+        <h3>RGB LED 3</h3>
+        <div class="sliderRGBLED">
+          <div style="display: flex; flex-direction: column;">
+            <span>0</span>
+            <span style="margin-top: auto;">255</span>
+          </div>
+          <div data-sync-ws-data="l3p" style="display: flex; flex-direction: column;">
+            <input 
+              type="number" 
+              min="0"
+              max="255"
+              value="0"
+              class="black"
+            >
+            <input
+              type="range"
+              min="0"
+              max="255"
+              value="0"
+              class="vertical"
+              orientation="vertical"
+            />
+          </div>
+          <div data-sync-ws-data="l3r" style="display: flex; flex-direction: column;">
+            <input 
+              type="number" 
+              min="0"
+              max="255"
+              value="0"
+              class="red"
+            >
+            <input
+              type="range"
+              min="0"
+              max="255"
+              value="0"
+              id="sliderRGB1"
+              class="vertical"
+              orientation="vertical"
+            />
+          </div>
+          <div data-sync-ws-data="l3g" style="display: flex; flex-direction: column;">
+            <input 
+              type="number" 
+              min="0"
+              max="255"
+              value="0"
+              class="green"
+            >
+            <input
+              type="range"
+              min="0"
+              max="255"
+              value="0"
+              id="sliderRGB2"
+              class="vertical"
+              orientation="vertical"
+            />
+          </div>
+          <div data-sync-ws-data="l3b" style="display: flex; flex-direction: column;">
+            <input 
+              type="number" 
+              min="0"
+              max="255"
+              value="0"
+              class="blue"
+            >
+            <input
+              type="range"
+              min="0"
+              max="255"
+              value="0"
+              id="sliderRGB3"
+              class="vertical"
+              orientation="vertical"
+            />
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <script>
+      let isReady = false;
+
+      const ws = new WebSocket("ws://localhost:5500");
+      // const ws = new WebSocket("ws://172.16.0.1:5000");
+      ws.addEventListener("open", () => {
+        console.log("We are connected!");
+        isReady = true;
+      });
+      /**
+       * @arg {string} event
+       * @arg {unknown} data
+       */
+      function sendWsData(event, data) {
+        if(!isReady) return;
+
+        const payload = `${event}:${data}`;
+
+        ws.send(payload);
+        console.log("Sent payload", payload);
+      }
+
+
+      const syncInputs = document.querySelectorAll("[data-sync-ws-data]");
+      syncInputs.forEach((container) => {
+        const inputs = container.querySelectorAll("input");
+        inputs.forEach((input) => {
+          input.addEventListener("input", (e) => {
+            inputs.forEach((input) => {
+              input.value = e.target.value
+            });
+
+            sendWsData(container.dataset.syncWsData, e.target.value);
+          })
+        });
+      });
+
+      const receivedPayloadInputs = document.querySelectorAll('.received-payload-input');
+      ws.addEventListener("message", (event) => {
+        const receivedPayload = event.data;
+        console.log("Received payload:", receivedPayload);
+        receivedPayloadInputs.forEach(input => {
+          input.value += receivedPayload + '\n';
+        });
+      });
+
+      function logSliderValues() {
+        const sliders = document.querySelectorAll('input[type="range"]');
+        sliders.forEach(slider => {
+          const syncData = slider.parentElement.dataset.syncWsData;
+          console.log(`${syncData}: ${slider.value}`);        
+        });
+      }
+
+      logSliderValues();
+      document.querySelectorAll('input[type="range"]').forEach(slider => {
+        slider.addEventListener('input', logSliderValues);
+      });
+
+      const inputElement = document.getElementById('maxInput');
+      inputElement.addEventListener('input', function() {
+        if (this.value.length > 4) {
+          this.value = this.value.slice(0, 4);
+        }
+      });
+    </script>
+  </body>
+</html>
