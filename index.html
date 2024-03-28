@@ -29,9 +29,6 @@
         margin-top: 50px;
         margin-left: 50px;
       }
-      h3 {
-        text-align: center;
-      }
       .vertical {
         writing-mode: vertical-lr;
         height: 40%;
@@ -73,9 +70,15 @@
         border: 2px solid #CBD5E1;
         border-radius: 6px;
         font-size: 14px;
+        margin-left: 50px;
       }
-      .helperText {
-        color: #64748B;
+      .receivedInput {
+        height: 30px;
+        width: 170px;
+        border: 2px solid #CBD5E1;
+        border-radius: 6px;
+        font-size: 14px;
+        margin-left: 50px;
       }
       /* Styles for the slider track */
       .sliderMono {
@@ -97,11 +100,22 @@
         background: #1E293B; 
         cursor: pointer;
       }
-      
       h1{
         color: '#1E293B';
         font-size: 48px;
         font-weight: 800;
+      }
+      h2{
+        color: '#1E293B';
+        margin-left: 50px;
+      }
+      h3 {
+        text-align: center;
+        margin-left: 50px;
+      }
+      .helperText {
+        color: #64748B;
+        margin-left: 50px;
       }
     </style>
   </head>
@@ -111,14 +125,16 @@
       <H2>Received Payload</H2>
       <p class="helperText">Received Lux & Received Bmono</p>
       <input 
+      received-data="lux"
       id="receiveLux"
       type="text"
-      class="received-payload-input maxInput"
+      class="received-payload-input receivedInput"
       />
       <input 
+        received-data="bmono"
         id="receiveBmono"
         type="text"
-        class="received-payload-input maxInput"
+        class="received-payload-input receivedInput"
       />
     </div>
 
@@ -172,7 +188,6 @@
         id="maxInput"
         type="number"
         class="maxInput"
-        oninput="checkInput(this)"
       />
       <p class="helperText">Enter a maximum of 4 numbers.</p>
     </div>
@@ -542,7 +557,7 @@
         });
       });
 
-      const receivedPayloadInputs = document.querySelectorAll('.received-payload-input');
+      const receivedPayloadInputs = document.querySelectorAll("[received-data]");
       ws.addEventListener("message", (event) => {
         const receivedPayload = event.data;
         console.log("Received payload:", receivedPayload);
@@ -569,6 +584,15 @@
         if (this.value.length > 4) {
           this.value = this.value.slice(0, 4);
         }
+      });
+
+      const maxInput = document.getElementById('maxInput');
+
+      function checkInput(input) {
+        console.log(input.value);
+      }
+      maxInput.addEventListener('input', function() {
+        checkInput(this);
       });
     </script>
   </body>
