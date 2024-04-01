@@ -8,9 +8,12 @@ wss.on("connection", (ws) => {
 
   ws.on("message", (data) => {
     console.log("Received: ", data);
+    ws.send('lux:12.4');
+    ws.send('bmono:164.2');
   });
 
   ws.on("close", () => {
     console.log("Client disconnected");
   });
+
 });

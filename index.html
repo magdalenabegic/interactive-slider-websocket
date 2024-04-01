@@ -524,7 +524,7 @@
       let isReady = false;
 
       const ws = new WebSocket("ws://localhost:5500");
-      // const ws = new WebSocket("ws://172.16.0.1:5000");
+      // const ws = new WebSocket("ws://172.16.0.1:8080/iaqm_led_test");
       ws.addEventListener("open", () => {
         console.log("We are connected!");
         isReady = true;
@@ -560,10 +560,19 @@
       const receivedPayloadInputs = document.querySelectorAll("[received-data]");
       ws.addEventListener("message", (event) => {
         const receivedPayload = event.data;
-        console.log("Received payload:", receivedPayload);
+        const dataType = receivedPayload.split(":")[0]; // Extract the data type from the received payload
+
         receivedPayloadInputs.forEach(input => {
-          input.value += receivedPayload + '\n';
+          if (input.getAttribute("received-data") === dataType) {
+            input.value = receivedPayload + '\n'; // Display the received payload only in the corresponding input box
+          }
         });
+      });
+
+      // test sending data
+      window.addEventListener('load', function() {
+        sendWsData('lux');
+        sendWsData('bmono');
       });
 
       function logSliderValues() {
