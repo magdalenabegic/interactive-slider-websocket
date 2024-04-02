@@ -123,7 +123,7 @@
     <h1>Interactive Sliders</h1>
     <div class="receivedPayload">
       <H2>Received Payload</H2>
-      <p class="helperText">Received Lux & Received Bmono</p>
+      <p class="helperText">Received Lux & received Bmono</p>
       <input 
       received-data="lux"
       id="receiveLux"
@@ -567,7 +567,11 @@
             input.value = receivedPayload + '\n'; // Display the received payload only in the corresponding input box
           }
         });
-      });
+
+      if (dataType === 'lux' || dataType === 'bmono') {
+        console.log(`ws:rx:`,receivedPayload);
+      }
+    });
 
       // test sending data
       window.addEventListener('load', function() {
@@ -579,7 +583,7 @@
         const sliders = document.querySelectorAll('input[type="range"]');
         sliders.forEach(slider => {
           const syncData = slider.parentElement.dataset.syncWsData;
-          console.log(`${syncData}: ${slider.value}`);        
+          console.log(`ws:tx:${syncData}: ${slider.value}`);        
         });
       }
 
@@ -598,7 +602,10 @@
       const maxInput = document.getElementById('maxInput');
 
       function checkInput(input) {
-        console.log(input.value);
+        // console.log(input.value);
+        if ('input[type="number"]'.includes(input.type)) {
+        console.log(`ws:tx:`,input.value);
+      }
       }
       maxInput.addEventListener('input', function() {
         checkInput(this);
