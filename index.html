@@ -186,7 +186,7 @@
     <div id="smallBoxesContainer">
       <input
         id="maxInput"
-        type="number"
+        type="text"
         class="maxInput"
       />
       <p class="helperText">Enter a maximum of 4 numbers.</p>
@@ -539,9 +539,7 @@
         const payload = `${event}:${data}`;
 
         ws.send(payload);
-        console.log("Sent payload", payload);
       }
-
 
       const syncInputs = document.querySelectorAll("[data-sync-ws-data]");
       syncInputs.forEach((container) => {
@@ -551,7 +549,6 @@
             inputs.forEach((input) => {
               input.value = e.target.value
             });
-
             sendWsData(container.dataset.syncWsData, e.target.value);
           })
         });
@@ -560,55 +557,59 @@
       const receivedPayloadInputs = document.querySelectorAll("[received-data]");
       ws.addEventListener("message", (event) => {
         const receivedPayload = event.data;
-        const dataType = receivedPayload.split(":")[0]; // Extract the data type from the received payload
+        const dataType = receivedPayload.split(":")[0];
 
         receivedPayloadInputs.forEach(input => {
           if (input.getAttribute("received-data") === dataType) {
-            input.value = receivedPayload + '\n'; // Display the received payload only in the corresponding input box
+            input.value = receivedPayload + '\n';
           }
         });
 
-      if (dataType === 'lux' || dataType === 'bmono') {
-        console.log(`ws:rx:`,receivedPayload);
-      }
-    });
+        if (dataType === 'lux' || dataType === 'bmono') {
+          console.log(`ws:rx:`,receivedPayload);
+        }
+      });
 
-      // test sending data
       window.addEventListener('load', function() {
         sendWsData('lux');
         sendWsData('bmono');
       });
 
+      const maxInput = document.getElementById('maxInput');
+      let maxInputValue = ''; // Variable to store the previous value of the maxInput field
+
+      function checkInput(input) {
+        if (input.id === 'maxInput') {
+          if (input.value !== maxInputValue) {
+            console.clear();
+            maxInputValue = input.value;
+            console.log(`ws:tx:text: ${input.value}`);
+            logSliderValues();
+            sendWsData(`ws:tx:text: ${input.value}`)
+          }
+        }
+      };
+
+      maxInput.addEventListener('input', function() {
+        if (this.value.length > 4) {
+          this.value = this.value.slice(0, 4);
+        }
+        checkInput(this);
+      });
       function logSliderValues() {
         const sliders = document.querySelectorAll('input[type="range"]');
         sliders.forEach(slider => {
           const syncData = slider.parentElement.dataset.syncWsData;
           console.log(`ws:tx:${syncData}: ${slider.value}`);        
         });
+        console.log(`ws:tx:text: ${maxInput.value}`);
       }
-
+      
       logSliderValues();
       document.querySelectorAll('input[type="range"]').forEach(slider => {
-        slider.addEventListener('input', logSliderValues);
-      });
-
-      const inputElement = document.getElementById('maxInput');
-      inputElement.addEventListener('input', function() {
-        if (this.value.length > 4) {
-          this.value = this.value.slice(0, 4);
-        }
-      });
-
-      const maxInput = document.getElementById('maxInput');
-
-      function checkInput(input) {
-        // console.log(input.value);
-        if ('input[type="number"]'.includes(input.type)) {
-        console.log(`ws:tx:`,input.value);
-      }
-      }
-      maxInput.addEventListener('input', function() {
-        checkInput(this);
+        slider.addEventListener('input', () => {
+          logSliderValues();
+        });
       });
     </script>
   </body>
